@@ -1,0 +1,40 @@
+.post {
+  border: 1px solid lightgrey;
+}
+
+img {
+  width: 180px;
+  height: auto;
+  margin-top: 15px;
+}
+
+.titleLine{
+  margin-top: 15px;
+}
+
+.titleLine > h3{
+  display: inline;
+}
+
+.title{
+  border-right: 1px solid lightgrey;
+  margin-right: 15px;
+  padding-right: 5px;
+}
+
+.negative {
+  color: red;
+}
+
+.positive {
+  color: green;
+}
+
+.footer{
+  margin-bottom: 15px;
+}
+
+.footer > h5 {
+  display: inline;
+  margin-right: 20px;
+}

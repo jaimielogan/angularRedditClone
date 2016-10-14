@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html ng-app="app">
+  <head>
+    <meta charset="utf-8">
+    <title>Angular Reddit Clone</title>
+
+    <!-- Styling -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/lumen/bootstrap.min.css" rel="stylesheet" integrity="sha384-gv0oNvwnqzF6ULI9TVsSmnULNb3zasNysvWwfT/s4l8k5I+g6oFz9dye0wg3rQ2Q" crossorigin="anonymous">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-T8Gy5hrqNKT+hzMclPo118YTQO6cYprQmhrYwIiQ/3axmI1hQomh7Ud2hPOy8SP1" crossorigin="anonymous">
+    <link rel="stylesheet" href="main.css">
+  </head>
+  <body ng-controller="MainController">
+    <!-- Navigation -->
+    <nav class="navbar navbar-inverse">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-2">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">Reddit Clone</a>
+        </div>
+
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-2">
+          <ul class="nav navbar-nav">
+            <li><a href="#">Submit Post</a></li>
+
+            <form class="navbar-form navbar-left" role="search">
+              <div class="form-group">
+                <input type="text" class="form-control" placeholder="Search">
+              </div>
+            </form>
+
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Sort By Votes<span class="caret"></span></a>
+              <ul class="dropdown-menu" role="menu">
+                <li><a href="#">Sort By Votes</a></li>
+                <li><a href="#">Sort By ???</a></li>
+              </ul>
+            </li>
+
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Body -->
+    <div class="post container" ng-repeat="post in view.posts">
+      <img src="{{post.image}}" />
+      <div class="titleLine">
+        <h3 class="title">
+          {{post.title}}
+        </h3>
+        <h3>
+          <i class="fa fa-arrow-up" aria-hidden="true" ng-click="upVote($index)"></i>
+          <i class="fa fa-arrow-down" aria-hidden="true" ng-click="downVote($index)"></i>
+        </h3>
+        <h3 ng-class="{'positive': post.votes > 0, 'negative': post.votes < 0}">
+          {{post.votes}}
+        </h3>
+      </div>
+      <h5 class="author">{{post.author}}</h5>
+      <p class="description">
+        {{post.description}}
+      </p>
+      <div class="footer">
+        <h5>
+          <i class="fa fa-calendar" aria-hidden="true"></i>
+          {{post.time | date:'EEEE, MMMM d, yyyy h:mm'}}</h5>
+          <h5>
+            <i class="fa fa-comment" aria-hidden="true"></i>
+            <ng-pluralize count="post.comments.length"
+            when="{'1': '{} Comment',
+            'other': '{} Comments'}">
+          </ng-pluralize>
+        </h5>
+        <h5>
+          <i class="fa fa-pencil" aria-hidden="true"></i>
+          Create Comment
+        </h5>
+      </div>
+
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular.js"></script>
+    <script src="./app.js"></script>
+  </body>
+</html>
