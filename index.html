@@ -3,11 +3,14 @@
   <head>
     <meta charset="utf-8">
     <title>Angular Reddit Clone</title>
-
     <!-- Styling -->
+    <!-- bootstrap -->
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     <link href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/lumen/bootstrap.min.css" rel="stylesheet" integrity="sha384-gv0oNvwnqzF6ULI9TVsSmnULNb3zasNysvWwfT/s4l8k5I+g6oFz9dye0wg3rQ2Q" crossorigin="anonymous">
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-T8Gy5hrqNKT+hzMclPo118YTQO6cYprQmhrYwIiQ/3axmI1hQomh7Ud2hPOy8SP1" crossorigin="anonymous">
+    <!-- animate -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.4.0/animate.min.css">
+    <!-- personal style sheet -->
     <link rel="stylesheet" href="main.css">
   </head>
   <body ng-controller="MainController">
@@ -21,24 +24,25 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="#">Reddit Clone</a>
+          <a class="navbar-brand" ng-click="reset()">Reddit Clone</a>
         </div>
 
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-2">
           <ul class="nav navbar-nav">
-            <li><a href="#">Submit Post</a></li>
+            <li><a href="#" ng-click="toggleSubmitPost()">Submit Post</a></li>
 
             <form class="navbar-form navbar-left" role="search">
               <div class="form-group">
-                <input type="text" class="form-control" placeholder="Search">
+                <input type="text" class="form-control" placeholder="Search" ng-model="view.search">
               </div>
             </form>
 
             <li class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Sort By Votes<span class="caret"></span></a>
-              <ul class="dropdown-menu" role="menu">
-                <li><a href="#">Sort By Votes</a></li>
-                <li><a href="#">Sort By ???</a></li>
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Sort by {{view.sort}}<span class="caret"></span></a>
+              <ul class="dropdown-menu" role="menu" ng-model="view.sort" ng-init="view.sort='votes' ; order_by=true">
+                <li ng-click="view.sort='votes' ; order_by=true"><a>Sort by votes</a></li>
+                <li ng-click="view.sort='date' ; order_by=true"><a>Sort by date</a></li>
+                <li ng-click="view.sort='title' ; order_by=false"><a>Sort by title</a></li>
               </ul>
             </li>
 
@@ -48,46 +52,136 @@
     </nav>
 
     <!-- Body -->
-    <div class="post container" ng-repeat="post in view.posts">
-      <img src="{{post.image}}" />
-      <div class="titleLine">
-        <h3 class="title">
-          {{post.title}}
-        </h3>
-        <h3>
-          <i class="fa fa-arrow-up" aria-hidden="true" ng-click="upVote($index)"></i>
-          <i class="fa fa-arrow-down" aria-hidden="true" ng-click="downVote($index)"></i>
-        </h3>
-        <h3 ng-class="{'positive': post.votes > 0, 'negative': post.votes < 0}">
-          {{post.votes}}
-        </h3>
-      </div>
-      <h5 class="author">{{post.author}}</h5>
-      <p class="description">
-        {{post.description}}
-      </p>
-      <div class="footer">
-        <h5>
-          <i class="fa fa-calendar" aria-hidden="true"></i>
-          {{post.time | date:'EEEE, MMMM d, yyyy h:mm'}}</h5>
-          <h5>
-            <i class="fa fa-comment" aria-hidden="true"></i>
-            <ng-pluralize count="post.comments.length"
-            when="{'1': '{} Comment',
-            'other': '{} Comments'}">
-          </ng-pluralize>
-        </h5>
-        <h5>
-          <i class="fa fa-pencil" aria-hidden="true"></i>
-          Create Comment
-        </h5>
+
+    <!-- Submit Post Form -->
+    <form name="postForm" ng-submit="submitPost(postForm)" class="submitPost container" ng-show="view.viewSubmitPost">
+
+      <div class="form-group" ng-class="{'has-success': postForm.title.$valid && postForm.title.$dirty, 'has-error': postForm.title.$invalid && postForm.title.$dirty}">
+        <label for="title">Title</label>
+        <input type="text" name="title" id="title" class="form-control" ng-model="view.title" required>
+        <p ng-show="postForm.title.$invalid && postForm.title.$dirty" class="invalid">
+          A Title is Required
+        </p>
       </div>
 
+      <div class="form-group" ng-class="{'has-success': postForm.author.$valid && postForm.author.$dirty, 'has-error': postForm.author.$invalid && postForm.author.$dirty}">
+        <label for="author">Author</label>
+        <input type="text" name="author" id="author" class="form-control" ng-model="view.author" required>
+        <p ng-show="postForm.author.$invalid && postForm.author.$dirty" class="invalid">
+          An Author is Required
+        </p>
+      </div>
+
+      <div class="form-group" ng-class="{'has-success': postForm.imageURL.$valid && postForm.imageURL.$dirty, 'has-error': postForm.imageURL.$invalid && postForm.imageURL.$dirty}">
+        <label for="imageURL">Image URL</label>
+        <input type="text" name="imageURL" id="imageURL" class="form-control" ng-model="view.image" required>
+        <p ng-show="postForm.imageURL.$invalid && postForm.imageURL.$dirty" class="invalid">
+          An Image is Required
+        </p>
+      </div>
+
+      <div class="form-group" ng-class="{'has-success': postForm.description.$valid && postForm.description.$dirty, 'has-error': postForm.description.$invalid && postForm.description.$dirty}">
+        <label for="description">Description</label>
+        <input type="text" name="description" id="description" class="form-control finalFormInput" ng-model="view.description" required>
+        <p ng-show="postForm.description.$invalid && postForm.description.$dirty" class="invalid finalFormInput">
+          A Description is Required
+        </p>
+      </div>
+
+      <input type="submit" name="submit" value="Submit Post" class="btn btn-default submitPostButton" ng-disabled="postForm.$invalid">
+    </form>
+
+    <!-- Post -->
+    <div class="post container" ng-repeat="post in view.posts | filter: view.search | orderBy: view.sort: order_by">
+      <div class="row">
+        <div class="col-lg-2">
+          <img src="{{post.image}}" />
+        </div>
+        <div class="col-lg-8 col-lg-offset-1">
+          <div class="titleLine">
+            <h3 class="title">
+              {{post.title}}
+            </h3>
+            <h3>
+              <i class="fa fa-arrow-up cursor" aria-hidden="true" ng-click="upVote(post)"></i>
+              <i class="fa fa-arrow-down cursor" aria-hidden="true" ng-click="downVote(post)"></i>
+            </h3>
+            <h3 ng-class="{'positive': post.votes > 0, 'negative': post.votes < 0}">
+              {{post.votes}}
+            </h3>
+          </div>
+          <h5 class="author">{{post.author}}</h5>
+          <p class="description">
+            {{post.description}}
+          </p>
+          <div class="footer">
+            <!-- Date -->
+            <h5>
+              <i class="fa fa-calendar" aria-hidden="true"></i>
+              {{post.date | amCalendar }}
+            </h5>
+            <!-- Comments -->
+            <h5 ng-click="toggleComments(post)">
+              <i class="fa fa-comment cursor" aria-hidden="true"></i>
+              <ng-pluralize count="post.comments.length"
+              when="{'1': '{} Comment',
+              'other': '{} Comments'}" class="cursor">
+              </ng-pluralize>
+            </h5>
+            <!-- Creating Comments -->
+            <h5 ng-click="toggleSubmitComment(post)" class="cursor">
+              <i class="fa fa-pencil cursor" aria-hidden="true"></i>
+              Create Comment
+            </h5>
+
+            <!-- Comment Form -->
+            <form name="commentForm" ng-submit="submitComment(post, commentForm)" class="submitComment container" ng-show="post.viewSubmitComment">
+              <div class="form-group" ng-class="{'has-success': commentForm.commentAuthor.$valid && commentForm.commentAuthor.$dirty, 'has-error': commentForm.commentAuthor.$invalid && commentForm.commentAuthor.$dirty}">
+                <label for="commentAuthor">Author</label>
+                <input type="text" name="commentAuthor" id="commentAuthor" class="form-control commentInput" ng-model="view.commentAuthor" required>
+                <p ng-show="commentForm.commentAuthor.$invalid && commentForm.commentAuthor.$dirty" class="invalid">
+                  An Author is Required
+                </p>
+              </div>
+
+              <div class="form-group" ng-class="{'has-success': commentForm.comment.$valid && commentForm.comment.$dirty, 'has-error': commentForm.comment.$invalid && commentForm.comment.$dirty}">
+                <label for="comment">Title</label>
+                <input type="text" name="comment" id="comment" class="form-control finalFormInput commentInput" ng-model="view.comment" required>
+                <p ng-show="commentForm.comment.$invalid && commentForm.comment.$dirty" class="invalid">
+                  An Comment is Required
+                </p>
+              </div>
+
+              <input type="submit" name="submit" value="Submit Comment" class="btn btn-default submitCommentButton" ng-disabled="commentForm.$invalid">
+            </form>
+
+            <!-- View Comments -->
+            <div class="comments" ng-repeat="comments in post.comments" ng-show="post.viewComments">
+              <h5>
+                <strong>{{comments.comment_author}}</strong>:
+              </h5>
+              <p>
+                {{comments.comment}}
+              </p>
+            </div>
+
+          </div>
+        </div>
+      </div>
     </div>
 
+    <!-- scripts -->
+    <!-- bootstrap scripts -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <!-- angular -->
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular.js"></script>
+    <!-- angular moment -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.9.0/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-moment/0.9.0/angular-moment.min.js"></script>
+    <!-- animate -->
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-animate.js"></script>
+    <!-- app.js -->
     <script src="./app.js"></script>
   </body>
 </html>

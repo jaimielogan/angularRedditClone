@@ -1,11 +1,30 @@
+.submitPost,
+.finalFormInput{
+  margin-bottom: 15px;
+}
+
+.invalid{
+  color: red;
+}
+
+.valid{
+  color: green;
+}
+
 .post {
   border: 1px solid lightgrey;
+  margin-bottom: 15px;
+  display: flex
 }
 
 img {
-  width: 180px;
+  width: 200px;
   height: auto;
   margin-top: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
 }
 
 .titleLine{
@@ -37,4 +56,22 @@ img {
 .footer > h5 {
   display: inline;
   margin-right: 20px;
+}
+
+.cursor{
+  cursor: pointer;
+}
+
+.commentInput{
+  width: 60%;
+}
+
+/*animations*/
+
+.ng-enter {
+  animation: fadeIn .5s;
+}
+
+.ng-leave {
+  animation: fadeOut .5s;
 }
